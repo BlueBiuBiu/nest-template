@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { RoleModule } from './role/role.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { RoleModule } from './role/role.module';
     AuthModule,
     UserModule,
     RoleModule,
+    UploadModule,
   ],
   controllers: [],
   providers: [],

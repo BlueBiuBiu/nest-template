@@ -7,7 +7,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { RoleService } from '../role/role.service';
-import { Roles } from '../role/entities/role.entity';
+import * as fs from 'fs';
 
 @Injectable()
 export class UserService {
@@ -38,7 +38,7 @@ export class UserService {
   findOne(id: number) {
     return this.userRepository.findOne({
       where: { id },
-      relations: { roles: true },
+      relations: { roles: true, avatar: true },
     });
   }
 
@@ -73,5 +73,27 @@ export class UserService {
     });
 
     return await this.userRepository.save(user);
+  }
+
+  async getAvatar(id: number, res: any) {
+    const user = await this.findOne(id);
+
+    if (!user) {
+      throw new NotFoundException('用户不存在');
+    }
+
+    // 未上传头像
+    if (!user.avatar) {
+      return '';
+    }
+
+    res.set({
+      'content-type': user.avatar.mimetype,
+    });
+    const file = fs.createReadStream(
+      `${process.cwd()}/uploads/${user.avatar.filename}`,
+    );
+
+    return file.pipe(res);
   }
 }

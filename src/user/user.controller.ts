@@ -9,6 +9,7 @@ import {
   UseFilters,
   UseInterceptors,
   UseGuards,
+  Res,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -16,6 +17,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { TypeormFilter } from '../filters/typeorm.filter';
 import { TransformInterceptor } from '../interceptors/transform.interceptor';
 import { JwtGuard } from '../guards/jwt.guard';
+import { Roles } from '../decorators/roles.decorator';
+import { Role } from '../enums/role.enum';
 
 @Controller('user')
 @UseInterceptors(new TransformInterceptor(CreateUserDto))
@@ -53,8 +56,21 @@ export class UserController {
   /**
    * 给用户添加权限
    */
+  @Roles(Role.Admin)
+  @UseGuards(JwtGuard)
   @Post('/role/:id')
   addRoleToUser(@Param('id') id: string, @Body() body: { roles: string[] }) {
     return this.userService.addRoleToUser(+id, body);
+  }
+
+  /**
+   * 获取用户头像
+   */
+  @Get('/avatar/:id')
+  async getAvatar(@Param('id') id: string, @Res() res: Response) {
+    const image = await this.userService.getAvatar(+id, res);
+    setTimeout(() => {
+      return image;
+    });
   }
 }

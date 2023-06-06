@@ -26,6 +26,6 @@ export class CreateUserDto {
   @IsOptional()
   readonly sex: string;
 
-  @IsOptional()
-  readonly avatar: string;
+  // @IsOptional()
+  // readonly avatar: string;
 }
