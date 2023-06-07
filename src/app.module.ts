@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as dotenv from 'dotenv';
 import * as Joi from '@hapi/joi';
 
@@ -9,6 +9,8 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { RoleModule } from './role/role.module';
 import { UploadModule } from './upload/upload.module';
+import { RedisModule } from '@nestjs-modules/ioredis';
+import { ConfigEnum } from './enums/config.enum';
 
 @Module({
   imports: [
@@ -30,6 +32,23 @@ import { UploadModule } from './upload/upload.module';
       }),
     }),
     TypeOrmModule.forRoot(connectionParams),
+    // Redis集成
+    RedisModule.forRootAsync({
+      useFactory: (configService: ConfigService) => {
+        const host = configService.get(ConfigEnum.REDIS_HOST);
+        const port = configService.get(ConfigEnum.REDIS_PORT);
+        const password = configService.get(ConfigEnum.REDIS_PASSWORD);
+        const url = password
+          ? `redis://${password}@${host}:${port}`
+          : `redis://${host}:${port}`;
+        return {
+          config: {
+            url,
+          },
+        };
+      },
+      inject: [ConfigService],
+    }),
     AuthModule,
     UserModule,
     RoleModule,

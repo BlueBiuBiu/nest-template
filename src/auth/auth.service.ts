@@ -1,6 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { JwtService } from '@nestjs/jwt';
+import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
 import { UserService } from '../user/user.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 
@@ -9,6 +10,7 @@ export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    @InjectRedis() private readonly redis: Redis,
   ) {}
 
   async signIn(username: string, password: string) {
@@ -23,10 +25,17 @@ export class AuthService {
       throw new ForbiddenException('用户名或者密码错误');
     }
 
-    const token = await this.jwtService.sign({
-      username: user.username,
-      sub: user.id,
-    });
+    let token = await this.redis.get(user.username);
+
+    if (!token) {
+      token = await this.jwtService.sign({
+        username: user.username,
+        sub: user.id,
+      });
+      await this.redis.set(user.username, token);
+    }
+
+    // 设置token
 
     return {
       statusCode: 200,
