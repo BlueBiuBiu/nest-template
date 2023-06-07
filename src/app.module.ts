@@ -2,14 +2,15 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as dotenv from 'dotenv';
 import * as Joi from '@hapi/joi';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { RedisModule } from '@nestjs-modules/ioredis';
+import { ScheduleModule } from '@nestjs/schedule';
 
 import { connectionParams } from '../ormconfig';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { RoleModule } from './role/role.module';
 import { UploadModule } from './upload/upload.module';
-import { RedisModule } from '@nestjs-modules/ioredis';
 import { ConfigEnum } from './enums/config.enum';
 
 @Module({
@@ -49,6 +50,7 @@ import { ConfigEnum } from './enums/config.enum';
       },
       inject: [ConfigService],
     }),
+    ScheduleModule.forRoot(),
     AuthModule,
     UserModule,
     RoleModule,

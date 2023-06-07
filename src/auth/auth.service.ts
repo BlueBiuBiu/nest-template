@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
 import { UserService } from '../user/user.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
+import { Interval } from '@nestjs/schedule';
 
 @Injectable()
 export class AuthService {
@@ -60,5 +61,14 @@ export class AuthService {
         message: '注册成功',
       };
     }
+  }
+
+  /**
+   * #官网 https://docs.nestjs.cn/9/techniques?id=%e5%ae%9a%e6%97%b6%e4%bb%bb%e5%8a%a1
+   * 定时任务
+   */
+  @Interval(2000)
+  handleExpired() {
+    console.log('每两秒执行一次');
   }
 }
