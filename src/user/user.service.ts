@@ -28,18 +28,30 @@ export class UserService {
     });
   }
 
-  findOneByUsername(username: string) {
-    return this.userRepository.findOne({
+  async findOneByUsername(username: string) {
+    const res = await this.userRepository.findOne({
       where: { username },
       relations: { roles: true },
     });
+
+    if (!res) {
+      throw new NotFoundException('用户不存在');
+    }
+
+    return res;
   }
 
-  findOne(id: number) {
-    return this.userRepository.findOne({
+  async findOne(id: number) {
+    const res = await this.userRepository.findOne({
       where: { id },
       relations: { roles: true, avatar: true },
     });
+
+    if (!res) {
+      throw new NotFoundException('用户不存在');
+    }
+
+    return res;
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
