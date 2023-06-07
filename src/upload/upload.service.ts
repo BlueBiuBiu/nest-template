@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Upload } from './entities/upload.entity';
 import { CreateUploadDto } from './dto/create-upload.dto';
 import { UserService } from '../user/user.service';
+import * as fs from 'fs';
 
 @Injectable()
 export class UploadService {
@@ -34,7 +35,17 @@ export class UploadService {
       file.user = user;
       return this.uploadRepository.save(file);
     } else {
-      // 有用户头像则替换
+      /**
+       *  有用户头像则替换
+       */
+
+      // 原本图片路径
+      const path = `${process.cwd()}/uploads/${tempFile[0].filename}`;
+      // 删除原本图片
+      if (fs.existsSync(path)) {
+        fs.unlinkSync(path);
+      }
+
       const newFile = this.uploadRepository.merge(tempFile[0], tempObj);
       return this.uploadRepository.save(newFile);
     }

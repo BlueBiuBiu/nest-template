@@ -69,6 +69,8 @@ export class UserController {
   @Get('/avatar/:id')
   async getAvatar(@Param('id') id: string, @Res() res: Response) {
     const image = await this.userService.getAvatar(+id, res);
+
+    // 确保流返回完全生成图片数据
     setTimeout(() => {
       return image;
     });

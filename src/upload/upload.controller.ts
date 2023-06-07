@@ -9,8 +9,11 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { UploadService } from './upload.service';
+import { TransformInterceptor } from '../interceptors/transform.interceptor';
+import { CreateUploadDto } from './dto/create-upload.dto';
 
 @Controller('upload')
+@UseInterceptors(new TransformInterceptor(CreateUploadDto))
 export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
